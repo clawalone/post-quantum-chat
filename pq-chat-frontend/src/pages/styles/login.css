@@ -1,0 +1,166 @@
+/* src/styles/login.css */
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Light Background for the whole page */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background: linear-gradient(120deg, #f0f4f8, #dbeafe);
+  height: 100vh;
+}
+
+/* Container card */
+.login-container {
+  max-width: 450px ;
+  max-height: 450px;
+  margin: 100px auto;
+  padding: 40px 30px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.8s ease forwards;
+  transition: transform 0.3s ease;
+  padding-right: 55px;
+}
+
+
+.login-container:hover {
+  transform: translateY(-5px);
+}
+
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Form styling */
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Floating labels setup */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  outline: none;
+  background: none;
+  transition: all 0.2s ease;
+}
+
+.input-group label {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  background: white;
+  color: #aaa;
+  font-size: 14px;
+  padding: 0 5px;
+  transition: 0.2s ease;
+  pointer-events: none;
+}
+
+/* Floating effect when focused or filled */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 12px;
+  color: #007bff;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Button style */
+.login-container button {
+  padding: 12px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-container button:hover {
+  background: linear-gradient(135deg, #0056b3, #003c82);
+}
+
+/* Error Message */
+.login-container .error {
+  color: #e74c3c;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Link & Text */
+.login-container p {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  color: #666;
+}
+
+.login-container a {
+  color: #007bff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login-container a:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode support (optional toggle-ready) */
+body.dark-mode {
+  background: #121212;
+}
+
+body.dark-mode .login-container {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+body.dark-mode .input-group input {
+  background: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+body.dark-mode .input-group label {
+  background: #1e1e1e;
+  color: #ccc;
+}
+
+body.dark-mode .login-container button {
+  background: linear-gradient(135deg, #3a8dff, #2758a5);
+}
+
+body.dark-mode .login-container button:hover {
+  background: linear-gradient(135deg, #2758a5, #163c80);
+}
