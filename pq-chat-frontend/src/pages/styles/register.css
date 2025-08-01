@@ -1,0 +1,164 @@
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Light Background */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background: linear-gradient(120deg, #f0f4f8, #dbeafe);
+  height: 100vh;
+}
+
+/* Container card */
+.register-container {
+  max-width: 420px;
+  margin: 100px auto;
+  padding: 40px 30px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.8s ease forwards;
+  transition: transform 0.3s ease;
+}
+
+.register-container:hover {
+  transform: translateY(-5px);
+}
+
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Form styling */
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Floating label structure */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  line-height: 1.4;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  outline: none;
+  background: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input-group label {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: white;
+  color: #aaa;
+  font-size: 14px;
+  padding: 0 4px;
+  transition: 0.2s ease;
+  pointer-events: none;
+}
+
+/* Floating label animation */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 12px;
+  color: #28a745;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Button */
+.register-container button {
+  padding: 12px;
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.register-container button:hover {
+  background: linear-gradient(135deg, #1e7e34, #145622);
+}
+
+/* Error Message */
+.register-container .error {
+  color: #e74c3c;
+  text-align: center;
+  font-size: 14px;
+  margin-top: -10px;
+}
+
+/* Link & Text */
+.register-container p {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 20px;
+  color: #666;
+}
+
+.register-container a {
+  color: #007bff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.register-container a:hover {
+  text-decoration: underline;
+}
+
+/* Optional Dark Mode */
+body.dark-mode {
+  background: #121212;
+}
+
+body.dark-mode .register-container {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+body.dark-mode .input-group input {
+  background: #2c2c2c;
+  color: #fff;
+  border: 1px solid #444;
+}
+
+body.dark-mode .input-group label {
+  background: #1e1e1e;
+  color: #ccc;
+}
+
+body.dark-mode .register-container button {
+  background: linear-gradient(135deg, #3cb371, #2e8b57);
+}
+
+body.dark-mode .register-container button:hover {
+  background: linear-gradient(135deg, #2e8b57, #1c5a38);
+}

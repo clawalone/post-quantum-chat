@@ -1,0 +1,17 @@
+.home-links {
+  margin-top: 20px;
+}
+
+.home-button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.home-button:hover {
+  background-color: #45a049;
+}
