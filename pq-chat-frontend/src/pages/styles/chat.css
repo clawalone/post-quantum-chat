@@ -260,3 +260,21 @@ body, html {
   outline: 2px solid var(--accent);
   outline-offset: 1.5px;
 }
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.room-item .delete-room {
+    color: red;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.room-item .delete-room:hover {
+    color: darkred;
+}

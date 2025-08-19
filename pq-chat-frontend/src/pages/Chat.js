@@ -1,4 +1,3 @@
-// src/pages/Chat.js
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -21,7 +20,7 @@ function Chat() {
             .catch(err => console.error(err));
     }, []);
 
-    // Join room and fetch messages
+    // Join room & fetch messages
     useEffect(() => {
         if (!room) return;
         socket.emit('join', { username, room });
@@ -31,19 +30,25 @@ function Chat() {
             .catch(err => console.error(err));
     }, [room, username]);
 
-    // Listen for incoming messages
+    // Listen for messages
     useEffect(() => {
-        socket.on('message', data => {
-            setMessages(prev => [...prev, data]);
-        });
+        socket.on('message', data => setMessages(prev => [...prev, data]));
         return () => socket.off('message');
     }, []);
 
-    // Auto-scroll to bottom on new message
+    // Listen for room creation & deletion
     useEffect(() => {
-        if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        socket.on('room_created', data => setRooms(prev => [...prev, data]));
+        socket.on('room_deleted', data => setRooms(prev => prev.filter(r => r.name !== data.room_name)));
+        return () => {
+            socket.off('room_created');
+            socket.off('room_deleted');
         }
+    }, []);
+
+    // Auto scroll
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const sendMessage = e => {
@@ -61,7 +66,16 @@ function Chat() {
 
         try {
             await axios.post('http://localhost:5000/create_room', { room_name: roomName });
-            setRooms(prev => [...prev, { name: roomName }]);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const deleteRoom = async (roomName) => {
+        if (!window.confirm(`Delete room "${roomName}"?`)) return;
+        try {
+            await axios.post('http://localhost:5000/delete_room', { room_name: roomName });
+            if (room === roomName) setRoom('');
         } catch (err) {
             console.error(err);
         }
@@ -80,8 +94,9 @@ function Chat() {
                 <div className="sidebar-header"><h3>Rooms</h3></div>
                 <div className="sidebar-content">
                     {rooms.map((r, i) => (
-                        <div key={i} className={`room-item ${r.name === room ? 'active' : ''}`} onClick={() => setRoom(r.name)}>
-                            {r.name}
+                        <div key={i} className={`room-item ${r.name === room ? 'active' : ''}`}>
+                            <span onClick={() => setRoom(r.name)}>{r.name}</span>
+                            <span className="delete-room" onClick={() => deleteRoom(r.name)}>🗑️</span>
                         </div>
                     ))}
                 </div>
@@ -104,7 +119,7 @@ function Chat() {
                             <div className="timestamp">{formatTime(msg.timestamp)}</div>
                         </div>
                     ))}
-                    <div ref={chatEndRef} /> {/* Scroll target */}
+                    <div ref={chatEndRef} />
                 </div>
 
                 <form className="chat-form" onSubmit={sendMessage}>

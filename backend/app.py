@@ -14,19 +14,16 @@ CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
-# MongoDB setup
 client = MongoClient("mongodb+srv://Sarvesh:Veeravarsh123@cluster0.qeiy37p.mongodb.net/?retryWrites=true&w=majority")
 db = client["pq_chat"]
 users_collection = db["users"]
 rooms_collection = db["rooms"]
 messages_collection = db["messages"]
 
-# Health check
 @app.route("/")
 def home():
     return "Server running", 200
 
-# Register user
 @app.route("/api/register", methods=["POST"])
 def register():
     try:
@@ -36,6 +33,7 @@ def register():
 
         if not username or not password:
             return jsonify({"error": "Username and password required"}), 400
+
         if users_collection.find_one({"username": username}):
             return jsonify({"error": "User already exists"}), 400
 
@@ -46,7 +44,6 @@ def register():
         print("Register error:", e)
         return jsonify({"error": "Server error during registration"}), 500
 
-# Login user
 @app.route("/api/login", methods=["POST"])
 def login():
     try:
@@ -64,13 +61,12 @@ def login():
         print("Login error:", e)
         return jsonify({"error": "Server error during login"}), 500
 
-# Get all rooms
+# Rooms
 @app.route("/rooms", methods=["GET"])
 def get_rooms():
     rooms = list(rooms_collection.find({}, {"_id": 0}))
     return jsonify({"rooms": rooms}), 200
 
-# Create a new room
 @app.route("/create_room", methods=["POST"])
 def create_room():
     data = request.get_json()
@@ -81,41 +77,45 @@ def create_room():
         return jsonify({"error": "Room already exists"}), 400
 
     rooms_collection.insert_one({"name": room_name})
-
-    # Emit the new room to all connected clients
-    socketio.emit("new_room", {"name": room_name})
-
+    socketio.emit("room_created", {"name": room_name})  # broadcast new room
     return jsonify({"message": "Room created successfully"}), 201
 
+@app.route("/delete_room", methods=["POST"])
+def delete_room():
+    data = request.get_json()
+    room_name = data.get("room_name")
+    if not room_name:
+        return jsonify({"error": "Room name required"}), 400
+    if not rooms_collection.find_one({"name": room_name}):
+        return jsonify({"error": "Room does not exist"}), 404
 
-# Get messages for a room
+    rooms_collection.delete_one({"name": room_name})
+    messages_collection.delete_many({"room": room_name})
+    socketio.emit("room_deleted", {"room_name": room_name})  # broadcast deleted room
+    return jsonify({"message": "Room deleted successfully"}), 200
+
 @app.route("/messages", methods=["GET"])
 def get_messages():
     room = request.args.get("room")
     msgs = list(messages_collection.find({"room": room}, {"_id": 0}))
     return jsonify({"messages": msgs}), 200
 
-# Socket.IO join room
+# Socket.IO
 @socketio.on("join")
 def on_join(data):
     username = data.get("username")
     room = data.get("room")
     join_room(room)
-    emit("receive_message", {"username": "System", "text": f"{username} has joined the room.", "timestamp": datetime.utcnow().isoformat()}, room=room)
+    emit("message", {"username": "System", "text": f"{username} has joined."}, room=room)
 
-# Socket.IO send message
 @socketio.on("send_message")
 def handle_message(data):
     username = data.get("username")
     room = data.get("room")
     text = data.get("text")
     timestamp = datetime.utcnow().isoformat()
-
-    # Save to MongoDB
     messages_collection.insert_one({"username": username, "room": room, "text": text, "timestamp": timestamp})
-
-    # Emit to all in room
-    emit("receive_message", {"username": username, "text": text, "timestamp": timestamp}, room=room)
+    emit("message", {"username": username, "text": text, "timestamp": timestamp}, room=room)
 
 if __name__ == "__main__":
     print("Starting Flask-SocketIO server on http://localhost:5000")
