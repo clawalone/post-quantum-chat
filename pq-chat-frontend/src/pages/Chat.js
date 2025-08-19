@@ -4,65 +4,66 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import './styles/chat.css';
 
-const socket = io('http://192.168.1.22:5000');
+const socket = io('http://localhost:5000', { transports: ['websocket'] });
 
-function Chat({ username }) {
+function Chat() {
+    const [username] = useState(localStorage.getItem('username') || '');
     const [room, setRoom] = useState('');
     const [rooms, setRooms] = useState([]);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const chatEndRef = useRef(null);
 
+    // Fetch rooms
     useEffect(() => {
-        axios.get('http://192.168.1.22:5000/rooms')
-            .then(res => setRooms(res.data.rooms))
-            .catch(err => console.error('❌ Failed to load rooms:', err));
+        axios.get('http://localhost:5000/rooms')
+            .then(res => setRooms(res.data.rooms || []))
+            .catch(err => console.error(err));
     }, []);
 
+    // Join room and fetch messages
     useEffect(() => {
-        if (room) {
-            socket.emit('join_room', room);
-            axios.get(`http://192.168.1.22:5000/messages?room=${room}`)
-                .then(res => setMessages(res.data.messages))
-                .catch(err => console.error('❌ Failed to load messages:', err));
-        }
-    }, [room]);
+        if (!room) return;
+        socket.emit('join', { username, room });
 
+        axios.get(`http://localhost:5000/messages?room=${room}`)
+            .then(res => setMessages(res.data.messages || []))
+            .catch(err => console.error(err));
+    }, [room, username]);
+
+    // Listen for incoming messages
     useEffect(() => {
-        socket.on('receive_message', data => {
+        socket.on('message', data => {
             setMessages(prev => [...prev, data]);
         });
-        return () => socket.off('receive_message');
+        return () => socket.off('message');
     }, []);
 
+    // Auto-scroll to bottom on new message
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     }, [messages]);
 
-    const sendMessage = (e) => {
+    const sendMessage = e => {
         e.preventDefault();
-        if (!message || !room || !username) return;
+        if (!message.trim() || !room) return;
 
-        const msgData = {
-            user: username,
-            room,
-            message,
-            timestamp: new Date().toISOString()
-        };
-
+        const msgData = { username, room, text: message, timestamp: new Date().toISOString() };
         socket.emit('send_message', msgData);
         setMessage('');
     };
 
     const createRoom = async () => {
-        const roomName = prompt("Enter new room name:");
-        if (roomName) {
-            try {
-                await axios.post('http://192.168.1.22:5000/create_room', { room_name: roomName });
-                setRooms(prev => [...prev, { name: roomName }]);
-            } catch (err) {
-                console.error("❌ Room creation failed:", err);
-            }
+        const roomName = prompt('Enter new room name:');
+        if (!roomName) return;
+
+        try {
+            await axios.post('http://localhost:5000/create_room', { room_name: roomName });
+            setRooms(prev => [...prev, { name: roomName }]);
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -71,25 +72,15 @@ function Chat({ username }) {
         window.location.href = '/login';
     };
 
-    const formatTime = iso => {
-        const date = new Date(iso);
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    };
+    const formatTime = iso => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return (
         <div className="chat-wrapper">
-            {/* Sidebar - always visible */}
             <div className="sidebar">
-                <div className="sidebar-header">
-                    <h3>Rooms</h3>
-                </div>
+                <div className="sidebar-header"><h3>Rooms</h3></div>
                 <div className="sidebar-content">
                     {rooms.map((r, i) => (
-                        <div
-                            key={i}
-                            className={`room-item ${r.name === room ? 'active' : ''}`}
-                            onClick={() => setRoom(r.name)}
-                        >
+                        <div key={i} className={`room-item ${r.name === room ? 'active' : ''}`} onClick={() => setRoom(r.name)}>
                             {r.name}
                         </div>
                     ))}
@@ -100,28 +91,27 @@ function Chat({ username }) {
                 </div>
             </div>
 
-            {/* Main Chat Area */}
             <div className="chat-main">
                 <div className="chat-header-desktop">
-                    <h2>{room || "Select a room"}</h2>
+                    <h2>{room || 'Select a room'}</h2>
                     <span>Logged in as <strong>{username}</strong></span>
                 </div>
 
                 <div className="chat-box">
                     {messages.map((msg, i) => (
-                        <div key={i} className={`chat-message ${msg.user === username ? 'self' : 'other'}`}>
-                            <div className="msg-text"><strong>{msg.user}</strong>: {msg.message}</div>
+                        <div key={i} className={`chat-message ${msg.username === username ? 'self' : 'other'}`}>
+                            <div className="msg-text"><strong>{msg.username}</strong>: {msg.text}</div>
                             <div className="timestamp">{formatTime(msg.timestamp)}</div>
                         </div>
                     ))}
-                    <div ref={chatEndRef} />
+                    <div ref={chatEndRef} /> {/* Scroll target */}
                 </div>
 
                 <form className="chat-form" onSubmit={sendMessage}>
                     <input
                         type="text"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={e => setMessage(e.target.value)}
                         placeholder="Type your message..."
                         required
                     />

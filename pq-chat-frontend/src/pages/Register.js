@@ -1,15 +1,10 @@
-// src/pages/Register.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './styles/register.css';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  });
-
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -20,17 +15,11 @@ const Register = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://192.168.1.22:5000/api/register', formData);
-
-      if (res.status === 201) {
-        navigate('/login');
-      }
+      const res = await axios.post('http://localhost:5000/api/register', formData);
+      if (res.status === 201) navigate('/login');
     } catch (err) {
-      if (err.response && err.response.data) {
-        setError(err.response.data.error || 'Registration failed.');
-      } else {
-        setError('Registration failed. Try again.');
-      }
+      if (err.response?.data?.error) setError(err.response.data.error);
+      else setError('Registration failed. Try again.');
     }
   };
 
@@ -44,10 +33,10 @@ const Register = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            required
             placeholder=" "
+            required
           />
-          <label htmlFor="username">Username</label>
+          <label>Username</label>
         </div>
 
         <div className="input-group">
@@ -56,16 +45,15 @@ const Register = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            required
             placeholder=" "
+            required
           />
-          <label htmlFor="password">Password</label>
+          <label>Password</label>
         </div>
 
         <button type="submit">Register</button>
+        {error && <p className="error">{error}</p>}
       </form>
-
-      {error && <p className="error">{error}</p>}
 
       <p>
         Already have an account? <Link to="/login">Login here</Link>

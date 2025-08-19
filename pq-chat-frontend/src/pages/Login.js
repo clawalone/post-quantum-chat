@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -16,12 +15,11 @@ const Login = ({ setCurrentUser }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://192.168.1.22:5000/api/login', formData);
-      
+      const res = await axios.post('http://localhost:5000/api/login', formData);
       if (res.status === 200 && res.data.token) {
         localStorage.setItem('token', res.data.token);
-        localStorage.setItem('username', formData.username);
-        setCurrentUser(formData.username);
+        localStorage.setItem('username', res.data.username);
+        setCurrentUser(res.data.username);
         navigate('/chat');
       }
     } catch (err) {
@@ -60,8 +58,6 @@ const Login = ({ setCurrentUser }) => {
           />
           <label>Password</label>
         </div>
-
-        
 
         <button type="submit">Login</button>
         {error && <p className="error">{error}</p>}
