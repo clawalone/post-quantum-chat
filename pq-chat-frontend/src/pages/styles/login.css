@@ -1,166 +1,102 @@
-/* src/styles/login.css */
-
-/* Fade-in animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Light Background for the whole page */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
-  background: linear-gradient(120deg, #f0f4f8, #dbeafe);
-  height: 100vh;
-}
-
-/* Container card */
-.login-container {
-  max-width: 450px ;
-  max-height: 450px;
-  margin: 100px auto;
-  padding: 40px 30px;
-  border-radius: 20px;
-  background: white;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-  animation: fadeIn 0.8s ease forwards;
-  transition: transform 0.3s ease;
-  padding-right: 55px;
-}
-
-
-.login-container:hover {
-  transform: translateY(-5px);
-}
-
-.login-container h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 28px;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-/* Form styling */
-.login-container form {
+/* Full page background remains */
+.login-page {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-/* Floating labels setup */
+/* Card with shadow, white background, rounded corners */
+.login-container {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem 2rem 1.5rem 2rem;
+  width: 100%;
+  max-width: 410px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+  text-align: center;
+  color: #212529;
+}
+
+/* Header styling */
+.login-container h2 {
+  margin-bottom: 1.6rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+/* Input group spacing */
 .input-group {
-  position: relative;
+  margin-bottom: 1.2rem;
 }
 
+/* Modern input style */
 .input-group input {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  border: 1.6px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafbfc;
+  color: #212529;
+  font-size: 1.07rem;
   outline: none;
-  background: none;
-  transition: all 0.2s ease;
+  transition: border 0.2s;
 }
 
-.input-group label {
-  position: absolute;
-  top: 12px;
-  left: 14px;
-  background: white;
-  color: #aaa;
-  font-size: 14px;
-  padding: 0 5px;
-  transition: 0.2s ease;
-  pointer-events: none;
+.input-group input:focus {
+  border-color: #1976d2;
+  background: #fff;
 }
 
-/* Floating effect when focused or filled */
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-  top: -8px;
-  left: 12px;
-  color: #007bff;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-/* Button style */
-.login-container button {
-  padding: 12px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
+/* Blue gradient button as in screenshot */
+button {
+  width: 100%;
+  padding: 0.95rem 0;
+  margin-top: 0.6rem;
+  background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+  color: #fff;
   border: none;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1.13rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: box-shadow 0.2s, background 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-.login-container button:hover {
-  background: linear-gradient(135deg, #0056b3, #003c82);
+button:hover {
+  background: linear-gradient(90deg, #005be7 0%, #0072ff 100%);
+  box-shadow: 0 5px 16px rgba(0,128,255,0.08);
 }
 
-/* Error Message */
-.login-container .error {
-  color: #e74c3c;
-  text-align: center;
-  font-size: 14px;
-  margin-top: 5px;
+/* Error text */
+.error {
+  color: #ff4d4d;
+  margin-top: 8px;
+  font-size: 0.99rem;
 }
 
-/* Link & Text */
-.login-container p {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 20px;
-  color: #666;
+/* Register text below button */
+.register-text {
+  margin-top: 1.4rem;
+  font-size: 1rem;
+  color: #444;
 }
 
-.login-container a {
-  color: #007bff;
+.register-text a {
+  color: #0072ff;
   font-weight: 500;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
-.login-container a:hover {
+.register-text a:hover {
   text-decoration: underline;
+  color: #005be7;
 }
 
-/* Dark mode support (optional toggle-ready) */
-body.dark-mode {
-  background: #121212;
-}
-
-body.dark-mode .login-container {
-  background: #1e1e1e;
-  color: #fff;
-}
-
-body.dark-mode .input-group input {
-  background: #2c2c2c;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-body.dark-mode .input-group label {
-  background: #1e1e1e;
-  color: #ccc;
-}
-
-body.dark-mode .login-container button {
-  background: linear-gradient(135deg, #3a8dff, #2758a5);
-}
-
-body.dark-mode .login-container button:hover {
-  background: linear-gradient(135deg, #2758a5, #163c80);
-}
